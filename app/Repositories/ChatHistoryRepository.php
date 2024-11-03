@@ -3,10 +3,15 @@
 namespace App\Repositories;
 
 use App\Models\ChatHistory;
-use Illuminate\Database\Eloquent\Collection;
 use Saas\Project\Modules\OpenAi\Chat\Creation\Gateways\SaveChatHistoryGateway;
+use Saas\Project\Modules\OpenAi\Chat\Delete\Gateways\DeleteChatHistoryGateway;
 use Saas\Project\Modules\OpenAi\Chat\Entities\ChatHistory as ChatHistoryEntity;
-class ChatHistoryRepository implements SaveChatHistoryGateway
+use Saas\Project\Modules\OpenAi\Chat\Find\Gateways\RetrieveChatHistoryGateway;
+use Saas\Project\Modules\OpenAi\Chat\Generics\Collections\ChatHistoryCollection;
+use Saas\Project\Modules\OpenAi\Chat\Update\Gateways\UpdateChatHistoryGateway;
+
+class ChatHistoryRepository implements SaveChatHistoryGateway, RetrieveChatHistoryGateway, UpdateChatHistoryGateway,
+                                       DeleteChatHistoryGateway
 {
     public function save(ChatHistoryEntity $chatHistory): ChatHistoryEntity
     {
@@ -17,22 +22,52 @@ class ChatHistoryRepository implements SaveChatHistoryGateway
         return $chatHistory;
     }
 
-    public function findById(int $id): ?ChatHistory
+    public function findById(int $id): ?ChatHistoryEntity
     {
-        return ChatHistory::find($id);
+        $model = ChatHistory::find($id);
+
+        if ($model) {
+            return new ChatHistoryEntity(
+                $model->user_input,
+                $model->ai_response,
+                $model->id,
+                $model->created_at,
+                $model->updated_at
+            );
+        }
+
+        return null;
     }
 
-    public function findAll(): Collection
+    public function findAll(): ChatHistoryCollection
     {
-        return ChatHistory::all();
+        $models = ChatHistory::all();
+
+        $chatHistoryCollection = new ChatHistoryCollection();
+        foreach ($models as $model) {
+            $chatHistoryCollection->add(
+                new ChatHistoryEntity(
+                    $model->user_input,
+                    $model->ai_response,
+                    $model->id,
+                    $model->created_at,
+                    $model->updated_at
+                )
+            );
+        }
+        return $chatHistoryCollection;
     }
 
-    public function update(int $id, array $data): bool
+    public function update(ChatHistoryEntity $chatHistory): bool
     {
-        $chatHistory = $this->findById($id);
+        $model = ChatHistory::find($chatHistory->getId());
 
-        if ($chatHistory) {
-            return $chatHistory->update($data);
+        if ($model) {
+            $model->user_input = $chatHistory->getUserInput();
+            $model->ai_response = $chatHistory->getAiResponse();
+            $model->save();
+
+            return true;
         }
 
         return false;
@@ -40,10 +75,10 @@ class ChatHistoryRepository implements SaveChatHistoryGateway
 
     public function delete(int $id): bool
     {
-        $chatHistory = $this->findById($id);
+        $model = ChatHistory::find($id);
 
-        if ($chatHistory) {
-            return $chatHistory->delete();
+        if ($model) {
+            return $model->delete();
         }
 
         return false;

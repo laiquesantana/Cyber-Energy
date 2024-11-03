@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\v1;
 
 use App\Adapters\ConfigAdapter;
-
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Saas\Project\Dependencies\Adapters\Logger\MonologLogAdapter;
 use Saas\Project\Modules\OpenAi\Chat\Creation\UseCase as CreateChatHistoryUseCase;
+use Saas\Project\Modules\OpenAi\Chat\Find\UseCase as RetrieveChatHistoryUseCase;
+use Saas\Project\Modules\OpenAi\Chat\Update\UseCase as UpdateChatHistoryUseCase;
+use Saas\Project\Modules\OpenAi\Chat\Delete\UseCase as DeleteChatHistoryUseCase;
+use Saas\Project\Modules\OpenAi\Chat\Entities\ChatHistory;
 
 class ChatController extends BaseController
 {
@@ -16,27 +19,106 @@ class ChatController extends BaseController
 
     private ConfigAdapter $configAdapter;
     private MonologLogAdapter $logger;
-    private CreateChatHistoryUseCase $useCase;
+    private CreateChatHistoryUseCase $createUseCase;
+    private RetrieveChatHistoryUseCase $retrieveUseCase;
+    private UpdateChatHistoryUseCase $updateUseCase;
+    private DeleteChatHistoryUseCase $deleteUseCase;
 
-    public function __construct(CreateChatHistoryUseCase $useCase)
-
-    {
+    public function __construct(
+        CreateChatHistoryUseCase $createUseCase,
+        RetrieveChatHistoryUseCase $retrieveUseCase,
+        UpdateChatHistoryUseCase $updateUseCase,
+        DeleteChatHistoryUseCase $deleteUseCase
+    ) {
         $this->logger = new MonologLogAdapter();
         $this->configAdapter = new ConfigAdapter();
-        $this->useCase = $useCase;
-
+        $this->createUseCase = $createUseCase;
+        $this->retrieveUseCase = $retrieveUseCase;
+        $this->updateUseCase = $updateUseCase;
+        $this->deleteUseCase = $deleteUseCase;
     }
 
     public function create(Request $request)
     {
         $userInput = $request->input('user_input');
-        $response = $this->useCase->execute($userInput);
+        $response = $this->createUseCase->execute($userInput);
 
         return response()->json([
-            'user_input' => $userInput,
-            'ai_response' => $response->getAIResponse(),
+            'id' => $response->getId(),
+            'user_input' => $response->getUserInput(),
+            'ai_response' => $response->getAiResponse(),
+            'created_at' => $response->getCreatedAt(),
+            'updated_at' => $response->getUpdatedAt(),
         ]);
     }
 
-}
+    public function index()
+    {
+        $chatHistories = $this->retrieveUseCase->getAll();
+        $chatHistories = $chatHistories->all();
+        $data = array_map(function ($chatHistory) {
+            return [
+                'id' => $chatHistory->getId(),
+                'user_input' => $chatHistory->getUserInput(),
+                'ai_response' => $chatHistory->getAiResponse(),
+                'created_at' => $chatHistory->getCreatedAt(),
+                'updated_at' => $chatHistory->getUpdatedAt(),
+            ];
+        }, $chatHistories);
 
+        return response()->json($data);
+
+        return response()->json($data);
+    }
+
+    public function show($id)
+    {
+        $chatHistory = $this->retrieveUseCase->getById($id);
+
+        if ($chatHistory) {
+            return response()->json([
+                'id' => $chatHistory->getId(),
+                'user_input' => $chatHistory->getUserInput(),
+                'ai_response' => $chatHistory->getAiResponse(),
+                'created_at' => $chatHistory->getCreatedAt(),
+                'updated_at' => $chatHistory->getUpdatedAt(),
+            ]);
+        } else {
+            return response()->json(['message' => 'Chat history not found'], 404);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $chatHistory = $this->retrieveUseCase->getById($id);
+
+        if (!$chatHistory) {
+            return response()->json(['message' => 'Chat history not found'], 404);
+        }
+
+        $userInput = $request->input('user_input', $chatHistory->getUserInput());
+        $aiResponse = $request->input('ai_response', $chatHistory->getAiResponse());
+
+        $chatHistory->setUserInput($userInput);
+        $chatHistory->setAiResponse($aiResponse);
+
+        $updated = $this->updateUseCase->execute($chatHistory);
+
+        if ($updated) {
+            return response()->json(['message' => 'Chat history updated successfully']);
+        } else {
+            return response()->json(['message' => 'Failed to update chat history'], 500);
+        }
+    }
+
+    public function delete($id)
+    {
+        $deleted = $this->deleteUseCase->execute($id);
+
+        if ($deleted) {
+            return response()->json(['message' => 'Chat history deleted successfully']);
+        } else {
+            return response()->json(['message' => 'Chat history not found'], 404);
+        }
+    }
+}
