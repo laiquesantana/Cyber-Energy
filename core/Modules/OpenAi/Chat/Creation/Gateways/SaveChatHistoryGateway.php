@@ -7,7 +7,7 @@ use Saas\Project\Modules\OpenAi\Chat\Entities\ChatHistory;
 
 interface SaveChatHistoryGateway
 {
-    public function save(ChatHistory $userEntity): ChatHistory;
+    public function save(ChatHistory $chatHistory): ChatHistory;
 
 
 }

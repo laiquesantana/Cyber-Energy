@@ -15,8 +15,13 @@ class FilterAIResponseRule
         $this->filter = $filter;
     }
 
-    public function apply(string $response): string
+    public function apply(string $response, string $isRelevant): string
     {
-        return str_contains(strtolower($response), $this->filter) ? $response : 'Response not related to energy market';
+        if (strtolower(trim($isRelevant)) === 'yes') {
+            $filteredResponse = $response;
+        } else {
+            $filteredResponse = 'Sorry, I am not able to help you with that.';
+        }
+        return $filteredResponse;
     }
 }
