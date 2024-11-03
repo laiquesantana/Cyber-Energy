@@ -1,32 +1,43 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Saas\Project\Packages\OpenAi\Chat;
 
-use OpenAI\Client;
+use App\Adapters\Http\ClientAdapter;
 use Saas\Project\Dependencies\Config\ConfigInterface;
+use Saas\Project\Dependencies\Http\Exceptions\RequestFailureException;
 
 class Api
 {
-    private Client $client;
+    private ClientAdapter $client;
     private ConfigInterface $config;
 
-    public function __construct(ConfigInterface  $config)
+    public function __construct(ClientAdapter $client, ConfigInterface $config)
     {
+        $this->client = $client;
         $this->config = $config;
-        $this->client =  \OpenAI::client($config->getOpenAiKey());
     }
 
     public function getResponse(string $prompt): string
     {
+        $endpoint = 'https://api.openai.com/v1/chat/completions';
+        $headers = [
+            'Authorization' => 'Bearer ' . $this->config->getOpenAiKey(),
+        ];
 
-        $response = $this->client->completions()->create([
+        $data = [
             'model' => $this->config->getOpenAiModel(),
-            'prompt' => $prompt,
-            'max_tokens' => 1500,
-        ]);
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'max_tokens' => 15000,
+        ];
 
-        return $response['choices'][0]['text'] ?? 'No response';
+        try {
+            $response = $this->client->post($endpoint, $data, $headers);
+
+            return json_decode($response->getBody(), true)['choices'][0]['message']['content'] ?? 'No response';
+        } catch (RequestFailureException $exception) {
+            throw new RequestFailureException("Failed to retrieve response from OpenAI: {$exception->getMessage()}", $exception->getCode(), $exception);
+        }
     }
 }

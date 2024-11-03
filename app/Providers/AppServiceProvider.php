@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Adapters\ConfigAdapter;
 use Illuminate\Support\ServiceProvider;
+use Saas\Project\Dependencies\Config\ConfigInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(ConfigInterface::class, ConfigAdapter::class);
+
     }
 
     /**
