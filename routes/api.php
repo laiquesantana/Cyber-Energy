@@ -31,5 +31,8 @@ Route::prefix('v1')->group(function () {
 
 Route::prefix('v1/')->group(function () {
     Route::post('/chat', [ChatController::class, 'create']);
-
+    Route::get('/chat', [ChatController::class, 'index']);
+    Route::get('/chat/{id}', [ChatController::class, 'show']);
+    Route::put('/chat/{id}', [ChatController::class, 'update']);
+    Route::delete('/chat/{id}', [ChatController::class, 'delete']);
 });
