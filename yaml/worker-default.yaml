@@ -1,0 +1,53 @@
+annotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/named: 'true'
+replicaCount: 1
+revisionHistoryLimit: 3
+imagePullSecrets:
+  - name: registry-credentials
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+containers:
+  - name: "php"
+    image: ...
+    pullPolicy: Always
+    resources:
+      limits:
+        cpu: "400m"
+        memory: 300Mi
+      requests:
+        cpu: "300m"
+        memory: 200Mi
+    livenessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+      exec:
+        command:
+          - php
+          - artisan
+          - application:health-check
+    readinessProbe:
+      failureThreshold: 3
+      initialDelaySeconds: 10
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 5
+      exec:
+        command:
+          - php
+          - artisan
+          - application:ready-check
+    secrets:
+      - name: 'api-consult-envs-external-secrets'
+    env:
+      data:
+        ### Override
+        CONTAINER_ROLE: "queue"
+        QUEUE_SEND_DOCUMENT_PROCS: "1"
+        <<: [ !!import/single ../configmaps/configmap.env.yaml ]

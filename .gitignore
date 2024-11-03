@@ -1,0 +1,7 @@
+/.idea
+.env
+/vendor
+/vendor/*
+.idea/
+/storage
+data

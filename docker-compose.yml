@@ -1,0 +1,65 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: sammy
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: travellist
+    container_name: energy-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/var/www
+    networks:
+      - energy
+
+  db1:
+    image: postgres:14.2-alpine
+    container_name: energy-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    networks:
+      - energy
+
+  cache:
+    restart: always
+    container_name: energy-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/cache/redis.conf:/etc/redis/redis.conf
+    entrypoint: redis-server /etc/redis/redis.conf
+    networks:
+      - energy
+
+  nginx:
+    image: nginx:alpine
+    container_name: energy-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - energy
+
+networks:
+  energy:
+    driver: bridge
+
+#volumes:
+#  logs-folder:
+#    name: ${log_rabbitmq_management}
+#    driver: local
