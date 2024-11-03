@@ -24,7 +24,10 @@ class UseCase
     public function execute(string $userInput): ChatHistory
     {
         $aiResponse = $this->gateway->getResponse($userInput);
-        $filteredResponse = (new FilterAIResponseRule())->apply($aiResponse);
+        $verificationPrompt = "Is the following answer related to the energy market? Answer only Yes or No. Answer:: {$aiResponse}";
+        $isRelevant = $this->gateway->getResponse($verificationPrompt);
+
+        $filteredResponse = (new FilterAIResponseRule())->apply($aiResponse,$isRelevant);
 
         $chatHistory = new ChatHistory($userInput, $filteredResponse);
         (new SaveChatHistoryRule($this->saveChatHistoryGateway))->apply($chatHistory);
