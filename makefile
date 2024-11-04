@@ -24,9 +24,16 @@ start-cache:
 
 test: start-php
 	@docker compose exec app ./vendor/bin/phpunit tests
+migrate: start-php
+	@docker compose exec app php artisan migrate
 
+migrate-rollback: start-php
+	@docker compose exec app php artisan migrate:rollback
+
+migrate-refresh: start-php
+	@docker compose exec app php artisan migrate:refresh
 
 cache redis: start-cache
 	@docker compose exec cache redis-cli
 
-.PHONY: up stop start-php cache start-cache test php composer
+.PHONY: up stop start-php cache start-cache test php composer migrate migrate-rollback migrate-refresh

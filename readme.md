@@ -39,15 +39,15 @@ Or, if you prefer to use Docker Compose directly:
 3.2 Start the Containers
 Bring up all services defined in the docker-compose.yml:
 
-make up
+- make up
 Or:
 
-docker compose up -d
-3.3 Run Database Migrations
+- docker compose up -d
+## 3.3 Run Database Migrations
 After starting the containers, enter the app container and run the necessary migrations:
 
-make php
-php artisan migrate
+- make migrate
+- or run make php and inside container run php artisan migrate
 
 ## Makefile Commands
 The project includes a Makefile with convenient commands to streamline development. Below are the available commands:
