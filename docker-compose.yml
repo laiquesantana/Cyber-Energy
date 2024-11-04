@@ -59,7 +59,5 @@ networks:
   energy:
     driver: bridge
 
-#volumes:
-#  logs-folder:
-#    name: ${log_rabbitmq_management}
-#    driver: local
+volumes:
+  dbdata:
