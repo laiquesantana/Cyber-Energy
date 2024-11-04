@@ -6,8 +6,10 @@ use App\Adapters\ConfigAdapter;
 use App\Adapters\RedisCacheAdapter;
 use App\Repositories\ChatHistoryRepository;
 use Illuminate\Support\ServiceProvider;
+use Saas\Project\Dependencies\Adapters\Logger\MonologLogAdapter;
 use Saas\Project\Dependencies\Cache\CacheInterface;
 use Saas\Project\Dependencies\Config\ConfigInterface;
+use Saas\Project\Dependencies\Interfaces\LogInterface;
 use Saas\Project\Modules\OpenAi\Chat\Creation\Gateways\SaveChatHistoryGateway;
 use Saas\Project\Modules\OpenAi\Chat\Delete\Gateways\DeleteChatHistoryGateway;
 use Saas\Project\Modules\OpenAi\Chat\Find\Gateways\RetrieveChatHistoryGateway;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UpdateChatHistoryGateway::class, ChatHistoryRepository::class);
         $this->app->bind(RetrieveChatHistoryGateway::class, ChatHistoryRepository::class);
         $this->app->bind(CacheInterface::class, RedisCacheAdapter::class);
+        $this->app->bind(LogInterface::class, MonologLogAdapter::class);
 
     }
 
