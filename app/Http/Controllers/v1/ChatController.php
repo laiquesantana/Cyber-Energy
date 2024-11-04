@@ -7,6 +7,7 @@ use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Saas\Project\Dependencies\Adapters\Logger\MonologLogAdapter;
+use Saas\Project\Dependencies\Cache\CacheInterface;
 use Saas\Project\Modules\OpenAi\Chat\Creation\UseCase as CreateChatHistoryUseCase;
 use Saas\Project\Modules\OpenAi\Chat\Find\UseCase as RetrieveChatHistoryUseCase;
 use Saas\Project\Modules\OpenAi\Chat\Update\UseCase as UpdateChatHistoryUseCase;
@@ -22,12 +23,15 @@ class ChatController extends BaseController
     private RetrieveChatHistoryUseCase $retrieveUseCase;
     private UpdateChatHistoryUseCase $updateUseCase;
     private DeleteChatHistoryUseCase $deleteUseCase;
+    private CacheInterface $cache;
 
     public function __construct(
         CreateChatHistoryUseCase $createUseCase,
         RetrieveChatHistoryUseCase $retrieveUseCase,
         UpdateChatHistoryUseCase $updateUseCase,
-        DeleteChatHistoryUseCase $deleteUseCase
+        DeleteChatHistoryUseCase $deleteUseCase,
+        CacheInterface $cache
+
     ) {
         $this->logger = new MonologLogAdapter();
         $this->configAdapter = new ConfigAdapter();
@@ -35,6 +39,8 @@ class ChatController extends BaseController
         $this->retrieveUseCase = $retrieveUseCase;
         $this->updateUseCase = $updateUseCase;
         $this->deleteUseCase = $deleteUseCase;
+        $this->cache = $cache;
+
     }
 
     public function create(Request $request)
@@ -43,7 +49,6 @@ class ChatController extends BaseController
         $response = $this->createUseCase->execute($userInput);
 
         return response()->json([
-            'id' => $response->getId(),
             'user_input' => $response->getUserInput(),
             'ai_response' => $response->getAiResponse(),
             'created_at' => $response->getCreatedAt(),
