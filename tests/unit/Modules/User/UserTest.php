@@ -2,8 +2,9 @@
 
 namespace unit\Modules\User;
 
+
 use PHPUnit\Framework\TestCase;
-use Saas\Project\Dependencies\Adapters\Logger\MonologLogAdapter;
+use Saas\Project\Dependencies\Interfaces\LogInterface;
 use Saas\Project\Modules\User\Generics\Entities\Status;
 use Saas\Project\Modules\User\Generics\Entities\User as EntitiesUser;
 use Saas\Project\Modules\User\Generics\Gateways\UserGateway as GatewaysUserGateway;
@@ -16,7 +17,7 @@ class UserTest extends TestCase
     public function testSuccess()
     {
         $userSaveGateway = $this->createMock(GatewaysUserGateway::class);
-        $loggerMock = $this->createMock(MonologLogAdapter::class);
+        $loggerMock = $this->createMock(LogInterface::class);
 
         $userSaveGateway->expects($this->once())
             ->method('save')
@@ -46,11 +47,12 @@ class UserTest extends TestCase
     public function testSaveUserError()
     {
         $userSaveGateway = $this->createMock(GatewaysUserGateway::class);
-        $loggerMock = $this->createMock(MonologLogAdapter::class);
+        $loggerMock = $this->createMock(LogInterface::class);
 
         $userSaveGateway->expects($this->once())
             ->method('save')
             ->willThrowException(new \Exception('Cannot save'));
+
         $useCase = new UseCase($userSaveGateway, $loggerMock);
 
         $user = new EntitiesUser();
@@ -68,11 +70,8 @@ class UserTest extends TestCase
                     ->setMessage('Error when trying save user')
             )
             ->setError('User save error')
-            ->setMeta(
-                [
-                    'total' => 1,
-                ]
-            );
+            ->setMeta(['total' => 1])
+            ->setData([]); // Adicionado para corresponder ao response atual
 
         $this->assertEquals($expectedResponse, $useCase->getResponse());
     }
