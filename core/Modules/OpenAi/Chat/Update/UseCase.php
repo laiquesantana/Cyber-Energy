@@ -2,6 +2,7 @@
 
 namespace Saas\Project\Modules\OpenAi\Chat\Update;
 
+use Saas\Project\Dependencies\Cache\CacheInterface;
 use Saas\Project\Modules\OpenAi\Chat\Update\Gateways\UpdateChatHistoryGateway;
 use Saas\Project\Modules\OpenAi\Chat\Entities\ChatHistory;
 use Saas\Project\Packages\OpenAi\Chat\Api as OpenAIGateway;
@@ -11,16 +12,20 @@ class UseCase
 {
     private UpdateChatHistoryGateway $gateway;
     private OpenAIGateway $openAIGateway;
+    private CacheInterface $cache;
 
-    public function __construct(UpdateChatHistoryGateway $gateway, OpenAIGateway $openAIGateway)
-    {
+    public function __construct(
+        UpdateChatHistoryGateway $gateway,
+        OpenAIGateway $openAIGateway,
+        CacheInterface $cache
+    ) {
         $this->gateway = $gateway;
         $this->openAIGateway = $openAIGateway;
+        $this->cache = $cache;
     }
 
     public function execute(ChatHistory $chatHistory): bool
     {
-
         $aiResponse = $this->openAIGateway->getResponse($chatHistory->getUserInput());
 
         $verificationPrompt = "Is the following answer related to the energy market? Answer only Yes or No. Answer:: {$aiResponse}";
@@ -30,6 +35,18 @@ class UseCase
 
         $chatHistory->setAiResponse($filteredResponse);
 
-        return $this->gateway->update($chatHistory);
+        $updated = $this->gateway->update($chatHistory);
+
+        if ($updated) {
+            $this->invalidateCache($chatHistory);
+        }
+
+        return $updated;
+    }
+
+    private function invalidateCache(ChatHistory $chatHistory): void
+    {
+
+        $this->cache->delete("chat_history:{$chatHistory->getId()}");
     }
 }

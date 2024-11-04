@@ -58,7 +58,7 @@ class UseCase
             $this->response = (new Response())
                 ->setStatus(
                     (new Status())
-                        ->setCode($exception->getCode())
+                        ->setCode(400)
                         ->setMessage('Error when trying save user')
                 )
                 ->setData([])
@@ -87,7 +87,7 @@ class UseCase
             $this->response = (new Response())
                 ->setStatus(
                     (new Status())
-                        ->setCode($exception->getCode())
+                        ->setCode(500)
                         ->setMessage('Generic Error when trying register new user')
                 )
                 ->setData([])
