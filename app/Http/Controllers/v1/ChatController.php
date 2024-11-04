@@ -11,7 +11,6 @@ use Saas\Project\Modules\OpenAi\Chat\Creation\UseCase as CreateChatHistoryUseCas
 use Saas\Project\Modules\OpenAi\Chat\Find\UseCase as RetrieveChatHistoryUseCase;
 use Saas\Project\Modules\OpenAi\Chat\Update\UseCase as UpdateChatHistoryUseCase;
 use Saas\Project\Modules\OpenAi\Chat\Delete\UseCase as DeleteChatHistoryUseCase;
-use Saas\Project\Modules\OpenAi\Chat\Entities\ChatHistory;
 
 class ChatController extends BaseController
 {
@@ -66,7 +65,7 @@ class ChatController extends BaseController
             ];
         }, $chatHistories);
 
-        return response()->json($data);
+        $data = array_values($data);
 
         return response()->json($data);
     }
@@ -97,10 +96,8 @@ class ChatController extends BaseController
         }
 
         $userInput = $request->input('user_input', $chatHistory->getUserInput());
-        $aiResponse = $request->input('ai_response', $chatHistory->getAiResponse());
 
         $chatHistory->setUserInput($userInput);
-        $chatHistory->setAiResponse($aiResponse);
 
         $updated = $this->updateUseCase->execute($chatHistory);
 
