@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 import {
     Typography,
     Box,
@@ -18,8 +18,7 @@ import {
     Alert,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-// Optional: Import ReactMarkdown if using markdown rendering
-// import ReactMarkdown from 'react-markdown';
+;
 
 const ChatHistory = () => {
     const [messages, setMessages] = useState([]);
@@ -35,7 +34,7 @@ const ChatHistory = () => {
 
     const fetchChatHistory = () => {
         axios
-            .get('/api/v1/chat')
+            .get('/chat')
             .then((response) => {
                 const data = Array.isArray(response.data) ? response.data : Object.values(response.data);
                 setMessages(data);
@@ -55,7 +54,7 @@ const ChatHistory = () => {
         if (!deleteMessage) return;
 
         axios
-            .delete(`/api/v1/chat/${deleteMessage.id}`)
+            .delete(`/chat/${deleteMessage.id}`)
             .then(() => {
                 setMessages(messages.filter((msg) => msg.id !== deleteMessage.id));
                 setSnackbar({ open: true, message: 'Message deleted successfully!', severity: 'success' });
@@ -82,7 +81,7 @@ const ChatHistory = () => {
 
     const handleEditSave = () => {
         axios
-            .put(`/api/v1/chat/${editMessage.id}`, {
+            .put(`/chat/${editMessage.id}`, {
                 user_input: editUserInput,
             })
             .then((response) => {
