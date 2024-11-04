@@ -128,18 +128,7 @@ const ChatHistory = () => {
                                     >
                                         AI: {msg.ai_response}
                                     </Typography>
-                                    /*
-                                    // Optional: Use ReactMarkdown for markdown formatting
-                                    <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                        component="div"
-                                    >
-                                        <ReactMarkdown>
-                                            {`AI:\n${msg.ai_response}`}
-                                        </ReactMarkdown>
-                                    </Typography>
-                                    */
+
                                 }
                             />
                             <IconButton

@@ -34840,18 +34840,6 @@ var ChatHistory = function ChatHistory() {
                 },
                 children: ["AI: ", msg.ai_response]
               })
-              /*
-              // Optional: Use ReactMarkdown for markdown formatting
-              <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  component="div"
-              >
-                  <ReactMarkdown>
-                      {`AI:\n${msg.ai_response}`}
-                  </ReactMarkdown>
-              </Typography>
-              */
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_9__["default"], {
               edge: "end",
               "aria-label": "edit",
