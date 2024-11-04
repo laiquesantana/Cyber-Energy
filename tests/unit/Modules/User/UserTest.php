@@ -71,8 +71,7 @@ class UserTest extends TestCase
             )
             ->setError('User save error')
             ->setMeta(['total' => 1])
-            ->setData([]); // Adicionado para corresponder ao response atual
-
+            ->setData([]);
         $this->assertEquals($expectedResponse, $useCase->getResponse());
     }
 }
