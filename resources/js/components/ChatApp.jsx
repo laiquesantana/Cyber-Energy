@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 import {
     TextField,
     Button,
@@ -24,7 +24,7 @@ const ChatApp = () => {
         setIsLoading(true);
 
         axios
-            .post('/api/v1/chat', { user_input: userInput })
+            .post('/chat', { user_input: userInput })
             .then((response) => {
                 setMessages([...messages, response.data]);
                 setUserInput('');
