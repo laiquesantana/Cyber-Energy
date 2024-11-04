@@ -18,37 +18,6 @@ Before running the project, make sure you have installed:
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/your-username/energy-api.git
-cd energy-api
-```
-
-## 2. Configure the .env File
-   Create a .env file in the project root by copying from .env.example, and fill in the required environment variables, such as database credentials and API keys:
-cp .env.example .env
-
-
-## Running the Project
-3.1 Build the Docker Image
-To build the Docker image, use:
-
-## make build
-Or, if you prefer to use Docker Compose directly:
-
-## docker compose build
-3.2 Start the Containers
-Bring up all services defined in the docker-compose.yml:
-
-- make up
-Or:
-
-- docker compose up -d
-## 3.3 Run Database Migrations
-After starting the containers, enter the app container and run the necessary migrations:
-
-- make migrate
-- or run make php and inside container run php artisan migrate
-
 ## Makefile Commands
 The project includes a Makefile with convenient commands to streamline development. Below are the available commands:
 ```bash
@@ -62,6 +31,42 @@ make composer	Installs PHP dependencies, ignoring platform requirements
 make test	Runs PHPUnit tests inside the app container
 make cache	Opens the Redis CLI within the cache container
 ```
+
+## 2. Configure the .env File
+   Create a .env file in the project root by copying from .env.example, and fill in the required environment variables, such as database credentials and API keys:
+```bash
+cp .env.dist .env
+```
+update OPENAI_API_KEY with your openai api key
+
+
+## Running the Project 3.1 Build the Docker Image
+To build the Docker image, use:
+
+```bash
+make build
+```
+Or, if you prefer to use Docker Compose directly:
+```bash
+docker compose build
+```
+
+## docker compose build
+3.2 Start the Containers
+Bring up all services defined in the docker-compose.yml:
+
+- make up
+Or:
+
+- docker compose up -d
+- run make compooser or docker-compose exec app composer install
+## 3.3 Run Database Migrations
+After starting the containers, enter the app container and run the necessary migrations:
+
+- make migrate
+- or run make php and inside container run php artisan migrate
+
+
 ```bash
 
 ├── adapters/
