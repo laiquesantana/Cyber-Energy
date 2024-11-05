@@ -67,6 +67,12 @@ After starting the containers, enter the app container and run the necessary mig
 - make migrate
 - or run make php and inside container run php artisan migrate
 
+## 3.3 Npm 
+After starting the containers, enter the app container and run the necessary npm install:
+
+- make php
+- npm install
+- npm run dev
 
 ```bash
 
