@@ -15,6 +15,22 @@ Before running the project, make sure you have installed:
 ---
 ## Swagger
 - swagger documentation can be found at swagger.yaml file
+
+## Postman Collection
+To test the API endpoints using Postman:
+
+Import the Postman Collection: Download and import the Postman Collection in Postman.(Cyber Energia.postman_collection.json in root directory)
+Set up Environment Variables: Ensure you configure environment variables for:
+BASE_URL (set to http://localhost:9000/api/v1 by default)
+- JWT_TOKEN (if authentication is required)
+## Testing the API Endpoints:
+Use the collection to test each endpoint, such as /chat for chat interactions, /login for authentication, etc.
+Authorization: For protected endpoints, make sure JWT_TOKEN is set in the Authorization header as Bearer <token>.
+
+# Frontend Application
+A frontend application is provided to enable seamless interaction with the API. This application allows users to perform chat interactions, authentication, and other API features via a user-friendly interface.
+
+http://localhost:9000/login
 ## Installation
 
 ### 1. Clone the Repository
