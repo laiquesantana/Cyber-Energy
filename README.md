@@ -13,7 +13,8 @@ Before running the project, make sure you have installed:
 - **Make** (to run commands via `Makefile`)
 
 ---
-
+## Swagger
+- swagger documentation can be found at swagger.yaml file
 ## Installation
 
 ### 1. Clone the Repository

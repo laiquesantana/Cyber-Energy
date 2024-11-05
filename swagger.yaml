@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: Chat API
+  description: API for user authentication and chat history management.
+  version: 1.0.0
+servers:
+  - url: http://localhost:9000/api/v1
+    description: Local server
+
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: John
+                last_name:
+                  type: string
+                  example: Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  example: StrongP@ssw0rd
+                password_confirm:
+                  type: string
+                  example: StrongP@ssw0rd
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: your-jwt-token
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                    example: 86400
+                  user:
+                    type: object
+        '400':
+          description: Bad request (validation error)
+
+  /login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  example: StrongP@ssw0rd
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: your-jwt-token
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                    example: 86400
+                  user:
+                    type: object
+        '401':
+          description: Unauthorized (invalid credentials)
+
+  /logout:
+    post:
+      summary: Logout the user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout successful
+
+  /chat:
+    get:
+      summary: Get all chat history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of chat history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    user_input:
+                      type: string
+                      example: "Hello, AI!"
+                    ai_response:
+                      type: string
+                      example: "Hello, how can I assist you?"
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+
+    post:
+      summary: Create a new chat entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_input:
+                  type: string
+                  example: "Hello, AI!"
+      responses:
+        '200':
+          description: Chat entry created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_input:
+                    type: string
+                    example: "Hello, AI!"
+                  ai_response:
+                    type: string
+                    example: "Hello, how can I assist you?"
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+
+  /chat/{id}:
+    get:
+      summary: Get a specific chat entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Chat entry found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  user_input:
+                    type: string
+                    example: "Hello, AI!"
+                  ai_response:
+                    type: string
+                    example: "Hello, how can I assist you?"
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+        '404':
+          description: Chat entry not found
+
+    put:
+      summary: Update a specific chat entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_input:
+                  type: string
+                  example: "Updated user input"
+      responses:
+        '200':
+          description: Chat entry updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Chat history updated successfully
+        '404':
+          description: Chat entry not found
+
+    delete:
+      summary: Delete a specific chat entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Chat entry deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Chat history deleted successfully
+        '404':
+          description: Chat entry not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
