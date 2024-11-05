@@ -26,8 +26,6 @@ Route::prefix('v1')->group(function () {
 
 Route::prefix('v1')->middleware(['jwt.verify'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
-
-    // Chat Routes
     Route::post('/chat', [ChatController::class, 'create']);
     Route::get('/chat', [ChatController::class, 'index']);
     Route::get('/chat/{id}', [ChatController::class, 'show']);

@@ -4,9 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableUser extends Migration
+class CreateTableUserFinal extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up():void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
@@ -21,7 +26,12 @@ class CreateTableUser extends Migration
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down():void
     {
         Schema::dropIfExists('users');
     }

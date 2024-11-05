@@ -1,3 +1,5 @@
+// src/components/Register.jsx
+
 import React, { useState } from 'react';
 import axios from '../utils/axiosConfig';
 import {
@@ -9,10 +11,13 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Register = () => {
     const [formData, setFormData] = useState({
+        first_name: '',
+        last_name: '',
         email: '',
         password: '',
+        password_confirm: '',
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -26,18 +31,21 @@ const Login = () => {
         setError(''); // Reset error message
 
         axios
-            .post('/login', formData)
+            .post('/register', formData)
             .then((response) => {
-                if (response.status === 200) {
-                    navigate('/chat'); // Redirect after successful login
+                if (response.status === 201 || response.status === 200) {
+                    navigate('/chat'); // Redirect to chat application
                 } else {
-                    setError('Login failed. Please try again.');
+                    setError('Registration failed. Please try again.');
                 }
             })
             .catch((error) => {
+                console.error('Registration error:', error);
                 const errorMessage =
                     error.response?.data?.message ||
-                    'An error occurred during login.';
+                    (error.response?.data?.errors &&
+                        Object.values(error.response.data.errors).join(' ')) ||
+                    'An error occurred during registration.';
                 setError(errorMessage);
             });
     };
@@ -45,7 +53,7 @@ const Login = () => {
     return (
         <Box maxWidth={400} mx="auto" mt={5}>
             <Typography variant="h4" gutterBottom>
-                Login
+                Register
             </Typography>
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
@@ -53,6 +61,26 @@ const Login = () => {
                 </Alert>
             )}
             <form onSubmit={handleSubmit}>
+                <TextField
+                    label="First Name"
+                    variant="outlined"
+                    fullWidth
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Last Name"
+                    variant="outlined"
+                    fullWidth
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    margin="normal"
+                    required
+                />
                 <TextField
                     label="Email"
                     variant="outlined"
@@ -75,6 +103,17 @@ const Login = () => {
                     margin="normal"
                     required
                 />
+                <TextField
+                    label="Confirm Password"
+                    variant="outlined"
+                    fullWidth
+                    name="password_confirm"
+                    type="password"
+                    value={formData.password_confirm}
+                    onChange={handleChange}
+                    margin="normal"
+                    required
+                />
                 <Button
                     type="submit"
                     variant="contained"
@@ -82,19 +121,19 @@ const Login = () => {
                     fullWidth
                     sx={{ mt: 2 }}
                 >
-                    Login
+                    Register
                 </Button>
                 <Button
-                    onClick={() => navigate('/register')}
+                    onClick={() => navigate('/login')}
                     color="secondary"
                     fullWidth
                     sx={{ mt: 1 }}
                 >
-                    Don't have an account? Register
+                    Already have an account? Login
                 </Button>
             </form>
         </Box>
     );
 };
 
-export default Login;
+export default Register;

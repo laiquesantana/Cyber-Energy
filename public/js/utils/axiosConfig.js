@@ -1,24 +1,11 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create({
     baseURL: '/api/v1',
-    withCredentials: true,
+    withCredentials: true, // Ensures cookies are sent with requests
 });
 
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = Cookies.get('jwt_token');
-
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
-
+// Response interceptor to handle unauthorized access
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {

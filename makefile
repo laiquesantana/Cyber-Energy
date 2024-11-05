@@ -7,6 +7,8 @@ help:
 composer:
 	composer install --ignore-platform-reqs --no-scripts
 
+build:
+	@docker compose build
 up:
 	@docker compose up -d
 
@@ -36,4 +38,4 @@ migrate-refresh: start-php
 cache redis: start-cache
 	@docker compose exec cache redis-cli
 
-.PHONY: up stop start-php cache start-cache test php composer migrate migrate-rollback migrate-refresh
+.PHONY: up stop start-php cache start-cache test php composer migrate migrate-rollback migrate-refresh build

@@ -72,7 +72,7 @@ class AuthController extends Controller
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
 
-            return $this->errorResponse($e->errors());
+            return $this->errorResponse($e->errors(),422);
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
@@ -120,20 +120,22 @@ class AuthController extends Controller
         $cookie = cookie(
             'jwt_token',
             $token,
-            1440,
-            '/',
-            'localhost', // Adjust domain
-            false,       // Secure flag - set to true in production with HTTPS
-            true,        // HTTP only
-            false,       // Raw - set to false
-            'Strict'     // SameSite attribute - 'Strict', 'Lax', or 'None'
+            1440,        // Expiration in minutes (e.g., 24 hours)
+            '/',         // Path
+            null,        // Domain set to null to support localhost
+            true,       // Secure - should be true in production with HTTPS
+            false,        // HTTP Only
+            false,       // Raw
+            'none'        // SameSite attribute
         );
 
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 43000,
+            'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => Auth::user(),
         ])->withCookie($cookie);
     }
+
+
 }

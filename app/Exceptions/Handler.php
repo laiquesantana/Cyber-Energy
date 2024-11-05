@@ -38,10 +38,4 @@ class Handler extends ExceptionHandler
             //
         });
     }
-    public function render($request, Throwable $exception)
-    {
-        $response = parent::render($request, $exception);
-
-        return $response;
-    }
 }

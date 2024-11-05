@@ -81,21 +81,18 @@ const ChatHistory = () => {
 
     const handleEditSave = () => {
         axios
-            .put(`/chat/${editMessage.id}`, { user_input: editUserInput })
+            .put(`/chat/${editMessage.id}`, {
+                user_input: editUserInput,
+            })
             .then((response) => {
-                const updatedMessage = response.data.data || response.data;
-                if (updatedMessage) {
-                    setMessages(
-                        messages.map((msg) =>
-                            msg.id === updatedMessage.id ? updatedMessage : msg
-                        )
-                    );
-                    setSnackbar({ open: true, message: 'Message updated successfully!', severity: 'success' });
-                    handleEditClose();
-                    fetchChatHistory();
-                } else {
-                    setSnackbar({ open: true, message: 'Failed to update message.', severity: 'error' });
-                }
+                const updatedMessage = response.data.data;
+                setMessages(
+                    messages.map((msg) =>
+                        msg.id === updatedMessage.id ? updatedMessage : msg
+                    )
+                );
+                setSnackbar({ open: true, message: 'Message updated successfully!', severity: 'success' });
+                handleEditClose();
             })
             .catch((error) => {
                 console.error('Error updating the message:', error);

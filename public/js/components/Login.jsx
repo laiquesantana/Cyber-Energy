@@ -29,12 +29,13 @@ const Login = () => {
             .post('/login', formData)
             .then((response) => {
                 if (response.status === 200) {
-                    navigate('/chat'); // Redirect after successful login
+                    navigate('/chat');
                 } else {
                     setError('Login failed. Please try again.');
                 }
             })
             .catch((error) => {
+                console.error('Login error:', error);
                 const errorMessage =
                     error.response?.data?.message ||
                     'An error occurred during login.';
